@@ -16,5 +16,5 @@ export const logoutSchema = z.object({
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
+  email: z.string(),
 });

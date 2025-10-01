@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../../../middlewares/error.middleware.js";
 import { prisma } from "../../../config/db.js"
-import { deleteProductSchema, productSchema } from "../../../validators/products.validators.js";
+import { deleteProductSchema, productSchema, updateProductSchema } from "../../../validators/products.validators.js";
 
 export async function createProduct(req: Request, res: Response, next: NextFunction) {
     try {
@@ -9,11 +9,11 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
         if (!parsed.success) {
             throw new AppError(parsed.error.message, 400);
         }
-        
+
         const productData = parsed.data as any
 
         const product = await prisma.product.create({
-            data: productData 
+            data: productData
         })
 
         res.json({
@@ -26,20 +26,44 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
 }
 
 export async function deleteProduct(req: Request, res: Response, next: NextFunction) {
-  try {
-    const parsed = deleteProductSchema.safeParse(req.body);
-    if (!parsed.success) {
-      throw new AppError(parsed.error.message, 400);
+    try {
+        const parsed = deleteProductSchema.safeParse(req.body);
+        if (!parsed.success) {
+            throw new AppError(parsed.error.message, 400);
+        }
+
+        const { productId } = parsed.data;
+
+        await prisma.product.delete({
+            where: { id: productId },
+        });
+
+        res.json({ message: "Product deleted successfully" });
+    } catch (error) {
+        next(error);
     }
+}
 
-    const { productId } = parsed.data;
+export async function updateProduct(req: Request, res: Response, next: NextFunction) {
+    try {
+        const parsed = updateProductSchema.safeParse(req.body)
+        if (!parsed.success) {
+            throw new AppError(parsed.error.message, 400)
+        }
 
-    await prisma.product.delete({
-      where: { id: productId },
-    });
+        const updatedData = parsed.data as any
+        const updatedProduct = await prisma.product.update({
+            where: {
+                id: parsed.data.id
+            },
+            data: updatedData
+        })
 
-    res.json({ message: "Product deleted successfully" });
-  } catch (error) {
-    next(error);
-  }
+        res.json({
+            message: "Product updated",
+            data: updatedProduct
+        })
+    } catch (error) {
+        next(error)
+    }
 }
