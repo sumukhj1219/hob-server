@@ -1,6 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "./error.middleware.js";
-import { supabase } from "../config/supabase.js";
 
 export const authorize =
     (...allowedRoles: string[]) =>
