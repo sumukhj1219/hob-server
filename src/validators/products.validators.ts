@@ -8,6 +8,10 @@ export const specificationsSchema = z.object({
     color: z.string().optional(),
 })
 
+export const deleteProductSchema = z.object({
+  productId: z.string(),
+});
+
 export const productSchema = z.object({
   name: z.string().optional(),
   price: z.number(),
