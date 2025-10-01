@@ -16,11 +16,18 @@ model User {
   email     String   @unique
   password  String
   address   String?
+  phone     String?
+  role      ROLE @default(USER)
   orders    Order[]
   cart      Cart?
   payments  Payment[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum ROLE{
+  USER
+  ADMIN
 }
 
 model Product {
