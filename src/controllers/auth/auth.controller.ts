@@ -5,6 +5,7 @@ import { AppError } from "../../middlewares/error.middleware.js";
 import bcrypt from "bcrypt";
 import { ENV } from "../../config/env.js";
 import { forgotPasswordSchema, loginSchema, logoutSchema, signupSchema } from "../../validators/auth.validators.js";
+import { sendResponse } from "../../utils/response.js";
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
     try {
@@ -29,7 +30,7 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
             },
         });
 
-        res.json({ user });
+        return sendResponse(res, "User signed up successfully", 200, data)
     } catch (error) {
         next(error);
     }
@@ -44,11 +45,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw new AppError(error.message, 401);
 
-        res.status(200).json({
-            user: data.user,
-            access_token: data.session?.access_token,
-            refresh_token: data.session?.refresh_token,
-        });
+        return sendResponse(res, "User logged in successfully", 200, data)
     } catch (error) {
         next(error);
     }
@@ -63,7 +60,7 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
         const { error } = await supabase.auth.admin.signOut(access_token);
         if (error) throw new AppError(error.message, 400);
 
-        res.json({ message: "User logged out successfully" });
+        return sendResponse(res, "User logged out successfully", 200)
     } catch (error) {
         next(error);
     }
@@ -80,7 +77,7 @@ export async function forgotPassword(req: Request, res: Response, next: NextFunc
         });
         if (error) throw new AppError(error.message, 400);
 
-        res.status(200).json({ message: "Password reset email sent" });
+        return sendResponse(res, "Password reset email sent successfully", 200)
     } catch (error) {
         next(error);
     }

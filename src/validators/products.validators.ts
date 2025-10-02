@@ -16,6 +16,8 @@ export const updateProductSchema = z.object({
   id:z.string(),
   name: z.string().optional(),
   price: z.number().optional(),
+  stock: z.number().optional(),
+  global_discount: z.number().optional(),
   currency: z.string().optional(),
   description: z.string().optional(),
   images: z.array(z.string().optional()),
@@ -24,11 +26,17 @@ export const updateProductSchema = z.object({
 })
 
 export const productSchema = z.object({
-  name: z.string().optional(),
+  name: z.string(),
   price: z.number(),
-  currency: z.string().optional(),
-  description: z.string().optional(),
+  stock: z.number().optional(),
+  currency: z.string(),
+  global_discount: z.number().optional(),
+  description: z.string(),
   images: z.array(z.string().optional()),
   sizes: z.array(z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional()),
   specifications: specificationsSchema,
 });
+
+export const bulkCreateProductSchema = z.array(
+  productSchema
+)
