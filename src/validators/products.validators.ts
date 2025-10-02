@@ -40,3 +40,7 @@ export const productSchema = z.object({
 export const bulkCreateProductSchema = z.array(
   productSchema
 )
+
+export const bulkDeleteProductSchema = z.object({
+  productIds: z.array(z.string()) 
+});
