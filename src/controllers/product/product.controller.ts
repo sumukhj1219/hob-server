@@ -111,3 +111,18 @@ export async function filterProductsByQuery(req: Request, res: Response, next: N
         next(error)
     }
 }
+
+export async function newProducts(req: Request, res: Response, next: NextFunction){
+    try {
+        const newProducts = await prisma.product.findMany({
+            orderBy:{
+                createdAt:"desc"
+            },
+            take: 10
+        })
+
+        return sendResponse(res, "New Products", 200, newProducts)
+    } catch (error) {
+        next(error)
+    }
+}
