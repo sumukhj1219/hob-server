@@ -39,6 +39,7 @@ model Product {
   images          String[]
   global_discount Decimal     @db.Decimal() @default(0)
   sizes           SIZES[]
+  keywords        String[]
   specifications  Json
   orderItems      OrderItem[]
   cartItems       CartItem[]

@@ -64,41 +64,6 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
     }
 }
 
-export async function getProducts(req: Request, res: Response, next: NextFunction){
-    try {
-        const products = await prisma.product.findMany()
-        if(!products){
-            throw new AppError("No products found", 404)
-        }
-
-        return sendResponse(res, "Products", 200, products)
-    } catch (error) {
-        next(error)
-    }
-}
-
-export async function getProductById(req: Request, res: Response, next: NextFunction) {
-    try {
-        const { id } = req.params;
-
-        if (!id) {
-            throw new AppError("Product ID is required", 400);
-        }
-
-        const product = await prisma.product.findUnique({
-            where: { id },
-        });
-
-        if (!product) {
-            throw new AppError("Product not found", 404);
-        }
-
-        return sendResponse(res, "Product fetched successfully", 200, product);
-    } catch (error) {
-        next(error);
-    }
-}
-
 export async function bulkCreateProducts(req: Request, res: Response, next: NextFunction){
     try {
         const parsed = bulkCreateProductSchema.safeParse(req.body)
