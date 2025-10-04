@@ -3,6 +3,7 @@ import cors from "cors"
 import authRouter from "./routers/auth/auth.router.js"
 import adminProductRouter from "./routers/admin/product/product.router.js"
 import productRouter from "./routers/product/product.router.js"
+import categoryRouter from "./routers/category/category.router.js"
 import { errorHandler } from "./middlewares/error.middleware.js"
 
 const app: Application = express()
@@ -17,6 +18,7 @@ app.get("/",(_,res)=>{
 app.use("/api/auth", authRouter)
 app.use("/api/admin/product", adminProductRouter)
 app.use("/api/product", productRouter)
+app.use("/api/category", categoryRouter)
 
 app.use(errorHandler)
 

@@ -85,7 +85,7 @@ export async function filterProductsByQuery(req: Request, res: Response, next: N
             throw new AppError(parse.error.message, 400)
         }
 
-        const { minPrice, maxPrice, size, keyword } = parse.data;
+        const { minPrice, maxPrice, size, keyword, colour } = parse.data;
 
         const products = await prisma.product.findMany({
             where: {
@@ -93,6 +93,7 @@ export async function filterProductsByQuery(req: Request, res: Response, next: N
                     minPrice ? { price: { gte: Number(minPrice) } } : {},
                     maxPrice ? { price: { lte: Number(maxPrice) } } : {},
                     size ? { sizes: { has: size } } : {},
+                    colour ? { specifications: { path: ["colour"], string_contains: colour } } : {},
                     keyword
                         ? {
                             OR: [
