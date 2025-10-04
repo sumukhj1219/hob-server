@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../../../middlewares/error.middleware.js";
 import { prisma } from "../../../config/db.js"
-import { bulkCreateProductSchema, bulkDeleteProductSchema, deleteProductSchema, productSchema, updateProductSchema } from "../../../validators/products.validators.js";
 import { sendResponse } from "../../../utils/response.js";
+import { bulkCreateProductSchema, bulkDeleteProductSchema, deleteProductSchema, productSchema, updateProductSchema } from "../../../validators/products.validators.js";
 
 export async function createProduct(req: Request, res: Response, next: NextFunction) {
     try {

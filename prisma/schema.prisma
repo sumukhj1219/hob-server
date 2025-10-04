@@ -14,7 +14,7 @@ model User {
   name      String?
   email     String    @unique
   password  String
-  address   String?
+  address   Json?
   phone     String?
   role      ROLE      @default(USER)
   orders    Order[]
