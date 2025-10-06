@@ -11,3 +11,8 @@ export const addCategorySchema = z.object({
 export const deleteCategorySchema = z.object({
     id: z.string()
 })
+
+export const updateCategorySchema = z.object({
+    id: z.string(),
+    name: z.string()
+})
