@@ -29,24 +29,34 @@ enum ROLE {
 }
 
 model Product {
-  id              String      @id @default(uuid())
-  name            String
-  price           Decimal     @db.Decimal()
-  currency        String
-  description     String?
-  stock           Int?        @default(0)
-  images          String[]
-  categoryId      String
-  category        Category    @relation(fields: [categoryId], references: [id])
-  global_discount Decimal     @default(0) @db.Decimal()
-  Rating          Int         @default(5)
-  sizes           SIZES[]
-  keywords        String[]
-  specifications  Json
-  orderItems      OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id             String    @id @default(uuid())
+  name           String
+  price          Decimal   @db.Decimal()
+  currency       String
+  description    String?
+  stock          Int?      @default(0)
+  images         String[]
+  categoryId     String
+  category       Category  @relation(fields: [categoryId], references: [id])
+  global_discount Decimal  @default(0) @db.Decimal()
+  Rating         Int       @default(5)
+  sizes          SIZES[]
+  keywords       String[]
+  specifications Json
+  orderItems     OrderItem[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([categoryId])
+  @@index([price])
+  @@index([name])
+  @@index([createdAt])
+
+  @@index([categoryId, price])
+
 }
+
+
 
 enum SIZES {
   XS

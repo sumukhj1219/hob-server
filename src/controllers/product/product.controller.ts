@@ -6,7 +6,9 @@ import { filterProductsByQuerySchema, searchProductByQuerySchema } from "../../v
 
 export async function getProducts(req: Request, res: Response, next: NextFunction) {
     try {
-        const products = await prisma.product.findMany()
+        const products = await prisma.product.findMany({
+            select: { id: true, name: true, price: true, images: true }
+        })
         if (!products) {
             throw new AppError("No products found", 404)
         }
@@ -27,6 +29,7 @@ export async function getProductById(req: Request, res: Response, next: NextFunc
 
         const product = await prisma.product.findUnique({
             where: { id },
+            select: { id: true, name: true, price: true, images: true }
         });
 
         if (!product) {
@@ -107,17 +110,18 @@ export async function filterProductsByQuery(req: Request, res: Response, next: N
             }
         })
 
+
         return sendResponse(res, "Filtered Products", 200, products)
     } catch (error) {
         next(error)
     }
 }
 
-export async function newProducts(req: Request, res: Response, next: NextFunction){
+export async function newProducts(req: Request, res: Response, next: NextFunction) {
     try {
         const newProducts = await prisma.product.findMany({
-            orderBy:{
-                createdAt:"desc"
+            orderBy: {
+                createdAt: "desc"
             },
             take: 10
         })
