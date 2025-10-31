@@ -4,8 +4,8 @@ import { redisCachingMiddleware } from "../../middlewares/redis.middleware.js"
 
 const router = express.Router()
 
-router.get("/get-products", getProducts)
-router.get("/get-product/:id", getProductById)
+router.get("/get-products", redisCachingMiddleware({ttlSeconds:300}), getProducts)
+router.get("/get-product/:id", redisCachingMiddleware({ttlSeconds:300}), getProductById)
 router.get("/search", redisCachingMiddleware({ttlSeconds:300}), searchProductsByQuery)
 router.get("/filter", redisCachingMiddleware({ttlSeconds:300}), filterProductsByQuery)
 router.get("/new", newProducts)

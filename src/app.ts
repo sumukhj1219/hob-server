@@ -7,10 +7,14 @@ import productRouter from "./routers/product/product.router.js"
 import categoryRouter from "./routers/category/category.router.js"
 import userRouter from "./routers/user/user.router.js"
 import { errorHandler } from "./middlewares/error.middleware.js"
+import compression from 'compression';
 
 const app: Application = express()
 
 app.use(cors())
+app.use(compression({
+  threshold: 512            
+}));
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
