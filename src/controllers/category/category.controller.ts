@@ -17,6 +17,7 @@ export async function categories(req: Request, res: Response, next: NextFunction
     }
 }
 
+
 export async function categoryProducts(req: Request, res: Response, next: NextFunction) {
     try {
         const query = req.params
@@ -40,6 +41,7 @@ export async function categoryProducts(req: Request, res: Response, next: NextFu
     }
 }
 
+
 export async function categoryWiseTotalProducts(req: Request, res: Response, next: NextFunction) {
     try {
         const categories = await prisma.category.findMany({
@@ -58,3 +60,4 @@ export async function categoryWiseTotalProducts(req: Request, res: Response, nex
         next(error);
     }
 }
+
