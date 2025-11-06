@@ -11,7 +11,7 @@ import compression from 'compression';
 
 const app: Application = express()
 
-app.use(cors())
+app.use(cors({}))
 app.use(compression({
   threshold: 512            
 }));
