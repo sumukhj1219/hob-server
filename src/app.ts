@@ -8,10 +8,22 @@ import categoryRouter from "./routers/category/category.router.js"
 import userRouter from "./routers/user/user.router.js"
 import { errorHandler } from "./middlewares/error.middleware.js"
 import compression from 'compression';
+import { ENV } from "./config/env.js"
 
 const app: Application = express()
 
-app.use(cors({}))
+const allowedOrigin = ENV.FRONTEND_URL
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || origin === allowedOrigin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
+
 app.use(compression({
   threshold: 512            
 }));
