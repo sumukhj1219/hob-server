@@ -4,7 +4,7 @@ import { categories, categoryProducts, categoryWiseTotalProducts } from "../../c
 const router = express.Router()
 
 router.get("/all", categories)
-router.get("/name/:name", categoryProducts)
+router.get("/:name", categoryProducts)
 router.get("/totalProducts", categoryWiseTotalProducts)
 
 export default router
