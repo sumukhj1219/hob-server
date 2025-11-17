@@ -33,6 +33,7 @@ export const productSchema = z.object({
   stock: z.number().optional(),
   currency: z.string(),
   categoryId: z.string(),
+  collectionId: z.string(),
   keywords: z.array(z.string()).optional(),
   global_discount: z.number().optional(),
   description: z.string(),

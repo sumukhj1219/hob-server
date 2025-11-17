@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import { ENV } from "../../config/env.js";
 import { forgotPasswordSchema, loginSchema, logoutSchema, signupSchema } from "../../validators/auth.validators.js";
 import { sendResponse } from "../../utils/response.js";
+import crypto from "crypto"
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
     try {
@@ -27,6 +28,7 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
                 email,
                 password: hashedPassword,
                 name,
+                cartId: crypto.randomUUID()
             },
         });
 

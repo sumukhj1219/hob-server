@@ -4,7 +4,6 @@ import { protect } from "../../../middlewares/auth.middleware.js"
 import { authorize } from "../../../middlewares/authorize.middleware.js"
 import { getProductById, getProducts, searchProductsByQuery } from "../../../controllers/product/product.controller.js"
 
-
 const router = express.Router()
 
 router.post("/create-product", protect, authorize("ADMIN"), createProduct)
@@ -16,6 +15,5 @@ router.post("/bulk-delete-products", protect, authorize("ADMIN"), bulkDeleteProd
 router.get("/get-products", protect, authorize("ADMIN"), getProducts)
 router.get("/get-product/:id", protect, authorize("ADMIN"), getProductById)
 router.get("/search", protect, authorize("ADMIN"), searchProductsByQuery)
-
 
 export default router
