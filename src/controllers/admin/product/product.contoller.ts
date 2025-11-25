@@ -14,7 +14,7 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
         const productData = parsed.data as any
 
         const product = await prisma.product.create({
-            data: productData
+            data:productData
         })
 
         return sendResponse(res, "Created new product", 200, product)

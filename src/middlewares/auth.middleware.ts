@@ -12,10 +12,11 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
         }
 
         const token = authHeader.split(" ")[1];
-
+        console.log(token)
         const { data: { user: supabaseUser }, error } = await supabase.auth.getUser(token);
 
         if (error || !supabaseUser) {
+            console.log(error, supabaseUser)
             throw new AppError("Invalid or expired token", 401);
         }
 
@@ -33,6 +34,7 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
             role: dbUser.role, 
             name: dbUser.name,
         };
+
 
         next();
     } catch (error) {

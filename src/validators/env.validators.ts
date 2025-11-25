@@ -11,6 +11,7 @@ export const envSchema = z.object({
   FRONTEND_URL: z.url("FRONTEND_URL must be a valid URL"),
   SUPABASE_URL: z.url("SUPABASE_URL must be a valid URL"),
   SUPABASE_ANON_KEY: z.string().min(1, "SUPABASE_ANON_KEY is required"),
+  SUPABASE_JWT: z.string().min(1, "SUPABASE_JWT is required"),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, "SUPABASE_SERVICE_ROLE_KEY is required"),
   REDIS_USERNAME: z.string("REDIS_USERNAME is required"),
   REDIS_PASSWORD: z.string("REDIS_PASSWORD is required"),
