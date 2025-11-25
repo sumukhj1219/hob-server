@@ -145,7 +145,6 @@ export async function increaseCartItemQuantity(req: Request, res: Response, next
   }
 }
 
-
 export async function decreaseCartItemQuantity(req: Request, res: Response, next: NextFunction) {
   try {
     const user = (req as any).user;

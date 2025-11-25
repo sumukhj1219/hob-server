@@ -8,6 +8,7 @@ import categoryRouter from "./routers/category/category.router.js"
 import collectionsRouter from "./routers/collections/collections.router.js"
 import userRouter from "./routers/user/user.router.js"
 import cartRouter from "./routers/cart/cart.router.js"
+import orderRouter from "./routers/orders/orders.router.js"
 import { errorHandler } from "./middlewares/error.middleware.js"
 import compression from 'compression';
 import { ENV } from "./config/env.js"
@@ -47,6 +48,7 @@ app.use("/api/category", categoryRouter)
 app.use("/api/user", userRouter)
 app.use("/api/collections", collectionsRouter)
 app.use("/api/carts", cartRouter)
+app.use("/api/orders", orderRouter)
 
 app.use(errorHandler)
 
