@@ -15,17 +15,17 @@ import { ENV } from "./config/env.js"
 
 const app: Application = express()
 
-// const allowedOrigin = ENV.FRONTEND_URL
+const allowedOrigin = ENV.FRONTEND_URL
 
-// app.use(cors({
-//   origin: (origin, callback) => {
-//     if (!origin || origin === allowedOrigin) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   }
-// }));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || origin === allowedOrigin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
 app.use(cors())
 app.use(compression({
   threshold: 512            
