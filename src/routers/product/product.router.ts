@@ -8,6 +8,6 @@ router.get("/get-products", redisCachingMiddleware({ttlSeconds:300}), getProduct
 router.get("/get-product/:id", redisCachingMiddleware({ttlSeconds:300}), getProductById)
 router.get("/search", redisCachingMiddleware({ttlSeconds:300}), searchProductsByQuery)
 router.get("/filter", redisCachingMiddleware({ttlSeconds:300}), filterProductsByQuery)
-router.get("/new", newProducts)
+router.get("/new",redisCachingMiddleware({ttlSeconds:300}), newProducts)
 
 export default router
