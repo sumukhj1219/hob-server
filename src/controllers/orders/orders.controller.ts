@@ -11,58 +11,80 @@ export async function createOrder(req: Request, res: Response, next: NextFunctio
 
         const userId = user.id as string;
 
-        const parsed = createOrderSchema.safeParse(req.body)
+        const parsed = createOrderSchema.safeParse(req.body);
         if (!parsed.success) {
-            throw new AppError("Invalid inputs", 400)
+            throw new AppError("Invalid inputs", 400);
         }
 
-        let totalPayableAmount = 0;
-        const items = parsed.data.items
+        const items = parsed.data.items;
 
-        const orderItemsData = await Promise.all(
-            items.map((async (item) => {
-                const product = await prisma.product.findUnique({
-                    where: {
-                        id: item.productId
-                    }
-                })
+        const result = await prisma.$transaction(async (tx) => {
+            let totalPayableAmount = 0;
+
+            const orderItemsData = [];
+
+            for (const item of items) {
+                const product = await tx.product.findUnique({
+                    where: { id: item.productId }
+                });
 
                 if (!product) {
-                    throw new AppError("Product with this Id not found", 404)
+                    throw new AppError("Product not found", 404);
                 }
 
-                const price = product.price
-                totalPayableAmount += Number(price) * item.quantity
+                if ((product.stockQty ?? 0) < item.quantity) {
+                    throw new AppError(`Not enough stock for ${product.name}`, 400);
+                }
 
-                return {
+                await tx.product.update({
+                    where: { id: product.id },
+                    data: {
+                        stockQty: { decrement: item.quantity }
+                    }
+                });
+
+                await tx.inventoryLog.create({
+                    data: {
+                        productId: product.id,
+                        delta: -item.quantity,
+                        type: "ORDER"
+                    }
+                });
+
+                const price = product.price;
+                totalPayableAmount += Number(price) * item.quantity;
+
+                orderItemsData.push({
                     productId: item.productId,
                     quantity: item.quantity,
                     price
-                }
-            }))
-        )
+                });
+            }
 
-        const order = await prisma.order.create({
-            data: {
-                userId,
-                total: totalPayableAmount,
-                items: {
-                    create: orderItemsData,
+            const order = await tx.order.create({
+                data: {
+                    userId,
+                    total: totalPayableAmount,
+                    items: {
+                        create: orderItemsData
+                    },
+                    status: "PENDING"
                 },
-                status: "PENDING",
-            },
-            include: {
-                items: true,
-            },
+                include: {
+                    items: true
+                }
+            });
+
+            await tx.cartItem.deleteMany({
+                where: { cartId: user.cartId }
+            });
+
+            return order;
         });
 
-        await prisma.cartItem.deleteMany({
-            where: { cartId: user.cartId },
-        });
-
-        return sendResponse(res, "Order created successfully", 200, order)
+        return sendResponse(res, "Order created successfully", 200, result);
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 
@@ -170,7 +192,7 @@ export async function getAllOrders(req: Request, res: Response, next: NextFuncti
     }
 }
 
-export async function cancelOrder(req: Request, res: Response, next: NextFunction){
+export async function cancelOrder(req: Request, res: Response, next: NextFunction) {
     try {
         const user = (req as any).user;
         if (!user) throw new AppError("User not found", 404);
@@ -178,22 +200,63 @@ export async function cancelOrder(req: Request, res: Response, next: NextFunctio
         const userId = user.id as string;
         const orderId = req.params.id;
 
-        if(!orderId){
-            throw new AppError("Order Id not found", 400)
+        if (!orderId) {
+            throw new AppError("Order ID not found", 400);
         }
 
-        const cancelledOrder = await prisma.order.update({
-            where:{
-                userId:userId,
-                id: orderId
-            },
-            data:{
-                status:"CANCELLED"
-            }
-        })
+        const result = await prisma.$transaction(async (tx) => {
+            const order = await tx.order.findFirst({
+                where: {
+                    id: orderId,
+                    userId
+                },
+                include: {
+                    items: true
+                }
+            });
 
-        return sendResponse(res, "Order cancelled", 200, cancelledOrder)
+            if (!order) {
+                throw new AppError("Order not found", 404);
+            }
+
+            if (order.status === "CANCELLED") {
+                throw new AppError("Order already cancelled", 400);
+            }
+
+            if (order.status === "DELIVERED") {
+                throw new AppError("Delivered orders cannot be cancelled", 400);
+            }
+
+            for (const item of order.items) {
+                await tx.product.update({
+                    where: { id: item.productId },
+                    data: {
+                        stockQty: { increment: item.quantity }
+                    }
+                });
+
+                await tx.inventoryLog.create({
+                    data: {
+                        productId: item.productId,
+                        delta: item.quantity,
+                        type: "ORDER_CANCELLED"
+                    }
+                });
+            }
+
+            const updatedOrder = await tx.order.update({
+                where: { id: orderId },
+                data: {
+                    status: "CANCELLED"
+                }
+            });
+
+            return updatedOrder;
+        });
+
+        return sendResponse(res, "Order cancelled successfully", 200, result);
+
     } catch (error) {
-        next(error)
+        next(error);
     }
 }

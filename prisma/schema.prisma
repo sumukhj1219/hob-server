@@ -31,33 +31,53 @@ enum ROLE {
 }
 
 model Product {
-  id              String      @id @default(uuid())
+  id              String         @id @default(uuid())
   name            String
-  price           Decimal     @db.Decimal()
+  price           Decimal        @db.Decimal()
   currency        String
   description     String?
-  stockQty        Int?        @default(0)
-  stockVisibility Int?        @default(0)
+  stockQty        Int?           @default(0)
+  stockVisibility Int?           @default(0)
   images          String[]
   categoryId      String
-  category        Category    @relation(fields: [categoryId], references: [id])
-  global_discount Decimal     @default(0) @db.Decimal()
-  Rating          Int         @default(5)
+  category        Category       @relation(fields: [categoryId], references: [id])
+  global_discount Decimal        @default(0) @db.Decimal()
+  Rating          Int            @default(5)
   sizes           SIZES[]
   collectionId    String
-  collection      Collections @relation(fields: [collectionId], references: [id])
+  collection      Collections    @relation(fields: [collectionId], references: [id])
   keywords        String[]
   specifications  Json
   orderItems      OrderItem[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   cartItems       CartItem[]
+  inventoryLogs   InventoryLog[]
 
   @@index([categoryId])
   @@index([price])
   @@index([name])
   @@index([createdAt])
   @@index([categoryId, price])
+}
+
+model InventoryLog {
+  id        String        @id @default(uuid())
+  productId String
+  delta     Int
+  type      InventoryType
+  createdAt DateTime      @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+enum InventoryType {
+  INITIAL
+  MANUAL_ADD
+  ORDER
+  ORDER_CANCELLED
+  RETURN
+  ADJUSTMENT
 }
 
 enum SIZES {

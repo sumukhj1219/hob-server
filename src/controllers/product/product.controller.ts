@@ -2,12 +2,18 @@ import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../../config/db.js"
 import { sendResponse } from "../../utils/response.js";
 import { AppError } from "../../middlewares/error.middleware.js";
-import { filterProductsByQuerySchema, searchProductByQuerySchema } from "../../validators/products.validators.js";
+import { filterProductsByQuerySchema, getAllProductsQuerySchema, searchProductByQuerySchema } from "../../validators/products.validators.js";
 
 export async function getProducts(req: Request, res: Response, next: NextFunction) {
     try {
+        const sortBy = getAllProductsQuerySchema.safeParse(req.query)
+
         const products = await prisma.product.findMany({
-            select: { id: true, name: true, price: true, images: true }
+            select: { id: true, name: true, price: true, images: true, description: true, stockQty: true },
+            orderBy: [
+                {price: sortBy.data?.sortBy.price ? "asc" : "desc"},
+                {createdAt: sortBy.data?.sortBy.popularity ? "asc" : "desc"}
+            ]
         })
         if (!products) {
             throw new AppError("No products found", 404)
@@ -29,7 +35,7 @@ export async function getProductById(req: Request, res: Response, next: NextFunc
 
         const product = await prisma.product.findUnique({
             where: { id },
-            select: { id: true, name: true, price: true, images: true }
+            select: { id: true, name: true, price: true, images: true, specifications: true, stockQty: true }
         });
 
         if (!product) {
@@ -88,11 +94,12 @@ export async function filterProductsByQuery(req: Request, res: Response, next: N
             throw new AppError(parse.error.message, 400)
         }
 
-        const { minPrice, maxPrice, size, keyword, colour } = parse.data;
+        const { minPrice, maxPrice, size, keyword, colour, collectionId } = parse.data;
 
         const products = await prisma.product.findMany({
             where: {
                 AND: [
+                    collectionId ? { collectionId } : {},
                     minPrice ? { price: { gte: Number(minPrice) } } : {},
                     maxPrice ? { price: { lte: Number(maxPrice) } } : {},
                     size ? { sizes: { has: size } } : {},
@@ -109,7 +116,6 @@ export async function filterProductsByQuery(req: Request, res: Response, next: N
                 ]
             }
         })
-
 
         return sendResponse(res, "Filtered Products", 200, products)
     } catch (error) {

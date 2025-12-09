@@ -3,11 +3,11 @@ import { bulkCreateProducts, bulkDeleteProducts, createProduct, deleteProduct, u
 import { protect } from "../../../middlewares/auth.middleware.js"
 import { authorize } from "../../../middlewares/authorize.middleware.js"
 import { getProductById, getProducts, searchProductsByQuery } from "../../../controllers/product/product.controller.js"
-import { redisCachingMiddleware } from "../../../middlewares/redis.middleware.js"
+import { upload } from "../../../middlewares/upload.middleware.js"
 
 const router = express.Router()
 
-router.post("/create-product", protect, authorize("ADMIN"), createProduct)
+router.post("/create-product", protect, authorize("ADMIN"), upload.array("images", 5), createProduct)
 router.post("/delete-product", protect, authorize("ADMIN"), deleteProduct)
 router.post("/update-product", protect, authorize("ADMIN"), updateProduct)
 router.post("/bulk-create-products", protect, authorize("ADMIN"), bulkCreateProducts)

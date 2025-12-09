@@ -8,6 +8,13 @@ export const specificationsSchema = z.object({
   colour: z.string().optional(),
 })
 
+export const getAllProductsQuerySchema = z.object({
+  sortBy:z.object({
+    popularity: z.boolean().optional().default(true),
+    price: z.boolean().optional(),
+  })
+})
+
 export const deleteProductSchema = z.object({
   productId: z.string(),
 });
@@ -39,7 +46,7 @@ export const productSchema = z.object({
   keywords: z.array(z.string()).optional(),
   global_discount: z.number().optional(),
   description: z.string(),
-  images: z.array(z.string().optional()),
+  images: z.array(z.string()).optional(),
   sizes: z.array(z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional()),
   specifications: specificationsSchema,
 });
@@ -61,6 +68,7 @@ export const filterProductsByQuerySchema = z.object({
   maxPrice: z.string().transform(Number).optional(),
   size: z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional(),
   keyword: z.string().optional(),
-  colour: z.string().optional()
+  colour: z.string().optional(),
+  collectionId: z.string().optional()
 });
 
